@@ -1,7 +1,6 @@
 //! AST node definitions for V8-Rust JavaScript engine
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 /// Represents a position in the source code
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
