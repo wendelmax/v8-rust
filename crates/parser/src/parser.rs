@@ -430,6 +430,7 @@ impl<'a> ExpressionParser<'a> {
     }
 
     fn parse_block_statement(&mut self) -> Option<Node> {
+        while let Some(Token::Whitespace) = self.tokens.get(self.pos) { self.pos += 1; }
         if let Some(Token::Symbol(sym)) = self.tokens.get(self.pos) {
             if sym == "{" {
                 self.pos += 1;
@@ -437,7 +438,10 @@ impl<'a> ExpressionParser<'a> {
                 loop {
                     while let Some(Token::Whitespace) = self.tokens.get(self.pos) { self.pos += 1; }
                     if let Some(Token::Symbol(s)) = self.tokens.get(self.pos) {
-                        if s == "}" { self.pos += 1; break; }
+                        if s == "}" { 
+                            self.pos += 1; 
+                            break; 
+                        }
                     }
                     if let Some(stmt) = self.parse_expression() {
                         body.push(stmt);
@@ -502,7 +506,7 @@ impl<'a> ExpressionParser<'a> {
                     params,
                     body,
                     generator: is_generator,
-                    async: is_async,
+                    r#async: is_async,
                 }));
             }
         }
@@ -522,9 +526,11 @@ impl<'a> ExpressionParser<'a> {
                             if s == ")" { self.pos += 1; }
                         }
                         let consequent = self.parse_block_statement().map(Box::new)?;
+                        while let Some(Token::Whitespace) = self.tokens.get(self.pos) { self.pos += 1; }
                         let alternate = if let Some(Token::Keyword(k)) = self.tokens.get(self.pos) {
                             if k == "else" {
                                 self.pos += 1;
+                                while let Some(Token::Whitespace) = self.tokens.get(self.pos) { self.pos += 1; }
                                 Some(Box::new(self.parse_block_statement()?))
                             } else { None }
                         } else { None };
@@ -615,35 +621,71 @@ impl<'a> ExpressionParser<'a> {
                                 }
                                 expr.map(Box::new)
                             }
+                        } else if let Some(Token::Keyword(k)) = self.tokens.get(self.pos) {
+                            if k == "let" || k == "const" || k == "var" {
+                                let kind = k.clone();
+                                self.pos += 1;
+                                while let Some(Token::Whitespace) = self.tokens.get(self.pos) { self.pos += 1; }
+                                if let Some(Token::Identifier(name)) = self.tokens.get(self.pos) {
+                                    self.pos += 1;
+                                    while let Some(Token::Whitespace) = self.tokens.get(self.pos) { self.pos += 1; }
+                                    let init_expr = if let Some(Token::Symbol(s)) = self.tokens.get(self.pos) {
+                                        if s == "=" {
+                                            self.pos += 1;
+                                            while let Some(Token::Whitespace) = self.tokens.get(self.pos) { self.pos += 1; }
+                                            let expr = self.parse_expression();
+                                            if let Some(Token::Symbol(s)) = self.tokens.get(self.pos) {
+                                                if s == ";" { self.pos += 1; }
+                                            }
+                                            expr
+                                        } else { None }
+                                    } else { None };
+                                    let declarator = crate::ast::VariableDeclarator {
+                                        id: Box::new(Node::Identifier(name.clone())),
+                                        init: init_expr.map(Box::new),
+                                    };
+                                    let decl = VariableDeclaration {
+                                        kind,
+                                        declarations: vec![declarator],
+                                    };
+                                    Some(Box::new(Node::VariableDeclaration(decl)))
+                                } else { None }
+                            } else { None }
                         } else { None };
                         
                         // Parse test
+                        while let Some(Token::Whitespace) = self.tokens.get(self.pos) { self.pos += 1; }
                         let test = if let Some(Token::Symbol(s)) = self.tokens.get(self.pos) {
                             if s == ";" {
                                 self.pos += 1;
                                 None
                             } else {
-                                let expr = self.parse_expression();
-                                if let Some(Token::Symbol(s)) = self.tokens.get(self.pos) {
-                                    if s == ";" { self.pos += 1; }
-                                }
-                                expr.map(Box::new)
+                                None
                             }
-                        } else { None };
+                        } else {
+                            let expr = self.parse_expression();
+                            if let Some(Token::Symbol(s)) = self.tokens.get(self.pos) {
+                                if s == ";" { self.pos += 1; }
+                            }
+                            expr.map(Box::new)
+                        };
                         
                         // Parse update
+                        while let Some(Token::Whitespace) = self.tokens.get(self.pos) { self.pos += 1; }
                         let update = if let Some(Token::Symbol(s)) = self.tokens.get(self.pos) {
                             if s == ")" {
                                 self.pos += 1;
                                 None
                             } else {
-                                let expr = self.parse_expression();
-                                if let Some(Token::Symbol(s)) = self.tokens.get(self.pos) {
-                                    if s == ")" { self.pos += 1; }
-                                }
-                                expr.map(Box::new)
+                                None
                             }
-                        } else { None };
+                        } else {
+                            let expr = self.parse_expression();
+                            if let Some(Token::Symbol(s)) = self.tokens.get(self.pos) {
+                                if s == ")" { self.pos += 1; }
+                            }
+                            expr.map(Box::new)
+                        };
                         
                         let body = self.parse_block_statement().map(Box::new)?;
                         return Some(Node::ForStatement(ForStatement {
@@ -994,10 +1036,21 @@ pub fn parse(tokens: &[Token]) -> Program {
                 }
             }
             Token::Eof => break,
+            Token::Identifier(_) => {
+                let mut expr_parser = ExpressionParser::new(tokens, pos);
+                if let Some(expr) = expr_parser.parse_expression() {
+                    pos = expr_parser.get_pos();
+                    body.push(Node::ExpressionStatement(crate::ast::ExpressionStatement {
+                        expression: Box::new(expr),
+                    }));
+                } else {
+                    pos += 1;
+                }
+            }
             _ => pos += 1,
         }
     }
-    Program { body }
+    Program { body, source_type: "script".to_string() }
 }
 
 #[cfg(test)]
@@ -1071,9 +1124,13 @@ mod tests {
         let tokens = tokenize("let n = null");
         let program = parse(&tokens);
         match &program.body[0] {
-            Node::VariableDeclaration(VariableDeclaration { name, value }) => {
-                assert_eq!(name, "n");
-                assert_eq!(**value, Node::Null);
+            Node::VariableDeclaration(VariableDeclaration { declarations, .. }) => {
+                match &declarations[0] {
+                    crate::ast::VariableDeclarator { id, init } => {
+                        assert_eq!(**id, Node::Identifier("n".to_string()));
+                        assert_eq!(**init.as_ref().unwrap(), Node::Null);
+                    }
+                }
             }
             _ => panic!("Expected variable declaration"),
         }
@@ -1084,9 +1141,13 @@ mod tests {
         let tokens = tokenize("let u = undefined");
         let program = parse(&tokens);
         match &program.body[0] {
-            Node::VariableDeclaration(VariableDeclaration { name, value }) => {
-                assert_eq!(name, "u");
-                assert_eq!(**value, Node::Undefined);
+            Node::VariableDeclaration(VariableDeclaration { declarations, .. }) => {
+                match &declarations[0] {
+                    crate::ast::VariableDeclarator { id, init } => {
+                        assert_eq!(**id, Node::Identifier("u".to_string()));
+                        assert_eq!(**init.as_ref().unwrap(), Node::Undefined);
+                    }
+                }
             }
             _ => panic!("Expected variable declaration"),
         }
@@ -1097,9 +1158,13 @@ mod tests {
         let tokens = tokenize("let s = \"hello\"");
         let program = parse(&tokens);
         match &program.body[0] {
-            Node::VariableDeclaration(VariableDeclaration { name, value }) => {
-                assert_eq!(name, "s");
-                assert_eq!(**value, Node::String("hello".to_string()));
+            Node::VariableDeclaration(VariableDeclaration { declarations, .. }) => {
+                match &declarations[0] {
+                    crate::ast::VariableDeclarator { id, init } => {
+                        assert_eq!(**id, Node::Identifier("s".to_string()));
+                        assert_eq!(**init.as_ref().unwrap(), Node::String("hello".to_string()));
+                    }
+                }
             }
             _ => panic!("Expected variable declaration"),
         }
@@ -1110,15 +1175,19 @@ mod tests {
         let tokens = tokenize("let z = (1 + 2)");
         let program = parse(&tokens);
         match &program.body[0] {
-            Node::VariableDeclaration(VariableDeclaration { name, value }) => {
-                assert_eq!(name, "z");
-                match &**value {
-                    Node::BinaryExpression(BinaryExpression { left, operator, right }) => {
-                        assert_eq!(**left, Node::Number(1.0));
-                        assert_eq!(operator, "+");
-                        assert_eq!(**right, Node::Number(2.0));
+            Node::VariableDeclaration(VariableDeclaration { declarations, .. }) => {
+                match &declarations[0] {
+                    crate::ast::VariableDeclarator { id, init } => {
+                        assert_eq!(**id, Node::Identifier("z".to_string()));
+                        match &**init.as_ref().unwrap() {
+                            Node::BinaryExpression(BinaryExpression { left, operator, right }) => {
+                                assert_eq!(**left, Node::Number(1.0));
+                                assert_eq!(operator, "+");
+                                assert_eq!(**right, Node::Number(2.0));
+                            }
+                            _ => panic!("Expected binary expression"),
+                        }
                     }
-                    _ => panic!("Expected binary expression"),
                 }
             }
             _ => panic!("Expected variable declaration"),
@@ -1130,16 +1199,20 @@ mod tests {
         let tokens = tokenize("let arr = [1, 2, 3]");
         let program = parse(&tokens);
         match &program.body[0] {
-            Node::VariableDeclaration(VariableDeclaration { name, value }) => {
-                assert_eq!(name, "arr");
-                match &**value {
-                    Node::ArrayLiteral(arr) => {
-                        assert_eq!(arr.elements.len(), 3);
-                        assert_eq!(arr.elements[0], Node::Number(1.0));
-                        assert_eq!(arr.elements[1], Node::Number(2.0));
-                        assert_eq!(arr.elements[2], Node::Number(3.0));
+            Node::VariableDeclaration(VariableDeclaration { declarations, .. }) => {
+                match &declarations[0] {
+                    crate::ast::VariableDeclarator { id, init } => {
+                        assert_eq!(**id, Node::Identifier("arr".to_string()));
+                        match &**init.as_ref().unwrap() {
+                            Node::ArrayLiteral(arr) => {
+                                assert_eq!(arr.elements.len(), 3);
+                                assert_eq!(arr.elements[0].as_ref().unwrap(), &Node::Number(1.0));
+                                assert_eq!(arr.elements[1].as_ref().unwrap(), &Node::Number(2.0));
+                                assert_eq!(arr.elements[2].as_ref().unwrap(), &Node::Number(3.0));
+                            }
+                            _ => panic!("Expected array literal"),
+                        }
                     }
-                    _ => panic!("Expected array literal"),
                 }
             }
             _ => panic!("Expected variable declaration"),
@@ -1151,17 +1224,31 @@ mod tests {
         let tokens = tokenize("let obj = {a: 1, b: 2}");
         let program = parse(&tokens);
         match &program.body[0] {
-            Node::VariableDeclaration(VariableDeclaration { name, value }) => {
-                assert_eq!(name, "obj");
-                match &**value {
-                    Node::ObjectLiteral(obj) => {
-                        assert_eq!(obj.properties.len(), 2);
-                        assert_eq!(obj.properties[0].key, "a");
-                        assert_eq!(*obj.properties[0].value, Node::Number(1.0));
-                        assert_eq!(obj.properties[1].key, "b");
-                        assert_eq!(*obj.properties[1].value, Node::Number(2.0));
+            Node::VariableDeclaration(VariableDeclaration { declarations, .. }) => {
+                match &declarations[0] {
+                    crate::ast::VariableDeclarator { id, init } => {
+                        assert_eq!(**id, Node::Identifier("obj".to_string()));
+                        match &**init.as_ref().unwrap() {
+                            Node::ObjectLiteral(obj) => {
+                                assert_eq!(obj.properties.len(), 2);
+                                match &obj.properties[0] {
+                                    Node::Property(prop) => {
+                                        assert_eq!(*prop.key, Node::Identifier("a".to_string()));
+                                        assert_eq!(*prop.value, Node::Number(1.0));
+                                    }
+                                    _ => panic!("Expected property"),
+                                }
+                                match &obj.properties[1] {
+                                    Node::Property(prop) => {
+                                        assert_eq!(*prop.key, Node::Identifier("b".to_string()));
+                                        assert_eq!(*prop.value, Node::Number(2.0));
+                                    }
+                                    _ => panic!("Expected property"),
+                                }
+                            }
+                            _ => panic!("Expected object literal"),
+                        }
                     }
-                    _ => panic!("Expected object literal"),
                 }
             }
             _ => panic!("Expected variable declaration"),
@@ -1173,16 +1260,20 @@ mod tests {
         let tokens = tokenize("let r = foo(1, 2)");
         let program = parse(&tokens);
         match &program.body[0] {
-            Node::VariableDeclaration(VariableDeclaration { name, value }) => {
-                assert_eq!(name, "r");
-                match &**value {
-                    Node::CallExpression(call) => {
-                        assert_eq!(*call.callee, Node::Identifier("foo".to_string()));
-                        assert_eq!(call.arguments.len(), 2);
-                        assert_eq!(call.arguments[0], Node::Number(1.0));
-                        assert_eq!(call.arguments[1], Node::Number(2.0));
+            Node::VariableDeclaration(VariableDeclaration { declarations, .. }) => {
+                match &declarations[0] {
+                    crate::ast::VariableDeclarator { id, init } => {
+                        assert_eq!(**id, Node::Identifier("r".to_string()));
+                        match &**init.as_ref().unwrap() {
+                            Node::CallExpression(call) => {
+                                assert_eq!(*call.callee, Node::Identifier("foo".to_string()));
+                                assert_eq!(call.arguments.len(), 2);
+                                assert_eq!(call.arguments[0], Node::Number(1.0));
+                                assert_eq!(call.arguments[1], Node::Number(2.0));
+                            }
+                            _ => panic!("Expected call expression"),
+                        }
                     }
-                    _ => panic!("Expected call expression"),
                 }
             }
             _ => panic!("Expected variable declaration"),
@@ -1198,7 +1289,7 @@ mod tests {
                 match &declarations[0] {
                     crate::ast::VariableDeclarator { id, init } => {
                         assert_eq!(**id, Node::Identifier("b".to_string()));
-                        match init.as_ref().unwrap() {
+                        match &**init.as_ref().unwrap() {
                             Node::BlockStatement(block) => {
                                 assert_eq!(block.body.len(), 2);
                                 assert_eq!(block.body[0], Node::Number(1.0));
@@ -1288,7 +1379,7 @@ mod tests {
                 match &declarations[0] {
                     crate::ast::VariableDeclarator { id, init } => {
                         assert_eq!(**id, Node::Identifier("result".to_string()));
-                        match init.as_ref().unwrap() {
+                        match &**init.as_ref().unwrap() {
                             Node::LogicalExpression(logical) => {
                                 assert_eq!(logical.operator, "||");
                             }
@@ -1310,10 +1401,10 @@ mod tests {
                 match &declarations[0] {
                     crate::ast::VariableDeclarator { id, init } => {
                         assert_eq!(**id, Node::Identifier("max".to_string()));
-                        match init.as_ref().unwrap() {
+                        match &**init.as_ref().unwrap() {
                             Node::ConditionalExpression(conditional) => {
-                                assert_eq!(**conditional.consequent, Node::Identifier("a".to_string()));
-                                assert_eq!(**conditional.alternate, Node::Identifier("b".to_string()));
+                                assert_eq!(*conditional.consequent, Node::Identifier("a".to_string()));
+                                assert_eq!(*conditional.alternate, Node::Identifier("b".to_string()));
                             }
                             _ => panic!("Expected conditional expression"),
                         }
@@ -1323,5 +1414,4 @@ mod tests {
             _ => panic!("Expected variable declaration"),
         }
     }
-} 
-} 
+}

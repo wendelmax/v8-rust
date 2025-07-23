@@ -373,21 +373,14 @@ pub fn tokenize(source: &str) -> Vec<Token> {
         // Operadores de 4 caracteres
         if four == ">>>=" {
             for _ in 0..4 { chars.next(); column += 1; }
-            tokens.push(Token::UnsignedRightShiftAssign);
+            tokens.push(Token::Symbol(four));
             continue;
         }
         
         // Operadores de 3 caracteres
         if three == "===" || three == "!==" || three == ">>>" || three == "<<=" || three == ">>=" {
             for _ in 0..3 { chars.next(); column += 1; }
-            match three.as_str() {
-                "===" => tokens.push(Token::StrictEqual),
-                "!==" => tokens.push(Token::StrictNotEqual),
-                ">>>" => tokens.push(Token::UnsignedRightShift),
-                "<<=" => tokens.push(Token::LeftShiftAssign),
-                ">>=" => tokens.push(Token::RightShiftAssign),
-                _ => unreachable!(),
-            }
+            tokens.push(Token::Symbol(three));
             continue;
         }
         
@@ -397,61 +390,37 @@ pub fn tokenize(source: &str) -> Vec<Token> {
            two == "&&" || two == "||" || two == "=>" || two == "??" || two == "?." || two == "<<" ||
            two == ">>" || two == "|=" || two == "&=" || two == "^=" || two == "**" {
             for _ in 0..2 { chars.next(); column += 1; }
-            match two.as_str() {
-                "==" => tokens.push(Token::Equal),
-                "!=" => tokens.push(Token::NotEqual),
-                "<=" => tokens.push(Token::LessThanEqual),
-                ">=" => tokens.push(Token::GreaterThanEqual),
-                "++" => tokens.push(Token::Increment),
-                "--" => tokens.push(Token::Decrement),
-                "+=" => tokens.push(Token::PlusAssign),
-                "-=" => tokens.push(Token::MinusAssign),
-                "*=" => tokens.push(Token::StarAssign),
-                "/=" => tokens.push(Token::SlashAssign),
-                "%=" => tokens.push(Token::PercentAssign),
-                "**" => tokens.push(Token::StarStar),
-                "&&" => tokens.push(Token::LogicalAnd),
-                "||" => tokens.push(Token::LogicalOr),
-                "=>" => tokens.push(Token::Arrow),
-                "??" => tokens.push(Token::NullishCoalescing),
-                "?." => tokens.push(Token::OptionalChaining),
-                "<<" => tokens.push(Token::LeftShift),
-                ">>" => tokens.push(Token::RightShift),
-                "|=" => tokens.push(Token::BitwiseOrAssign),
-                "&=" => tokens.push(Token::BitwiseAndAssign),
-                "^=" => tokens.push(Token::BitwiseXorAssign),
-                _ => unreachable!(),
-            }
+            tokens.push(Token::Symbol(two));
             continue;
         }
         
         // Operadores de 1 caractere
         match c {
-            '(' => { chars.next(); column += 1; tokens.push(Token::LeftParen); }
-            ')' => { chars.next(); column += 1; tokens.push(Token::RightParen); }
-            '{' => { chars.next(); column += 1; tokens.push(Token::LeftBrace); }
-            '}' => { chars.next(); column += 1; tokens.push(Token::RightBrace); }
-            '[' => { chars.next(); column += 1; tokens.push(Token::LeftBracket); }
-            ']' => { chars.next(); column += 1; tokens.push(Token::RightBracket); }
-            '.' => { chars.next(); column += 1; tokens.push(Token::Dot); }
-            ';' => { chars.next(); column += 1; tokens.push(Token::Semicolon); }
-            ',' => { chars.next(); column += 1; tokens.push(Token::Comma); }
-            ':' => { chars.next(); column += 1; tokens.push(Token::Colon); }
-            '?' => { chars.next(); column += 1; tokens.push(Token::Question); }
-            '!' => { chars.next(); column += 1; tokens.push(Token::Exclamation); }
-            '~' => { chars.next(); column += 1; tokens.push(Token::Tilde); }
-            '=' => { chars.next(); column += 1; tokens.push(Token::Assign); }
-            '<' => { chars.next(); column += 1; tokens.push(Token::LessThan); }
-            '>' => { chars.next(); column += 1; tokens.push(Token::GreaterThan); }
-            '+' => { chars.next(); column += 1; tokens.push(Token::Plus); }
-            '-' => { chars.next(); column += 1; tokens.push(Token::Minus); }
-            '*' => { chars.next(); column += 1; tokens.push(Token::Star); }
-            '/' => { chars.next(); column += 1; tokens.push(Token::Slash); }
-            '%' => { chars.next(); column += 1; tokens.push(Token::Percent); }
-            '&' => { chars.next(); column += 1; tokens.push(Token::BitwiseAnd); }
-            '|' => { chars.next(); column += 1; tokens.push(Token::BitwiseOr); }
-            '^' => { chars.next(); column += 1; tokens.push(Token::BitwiseXor); }
-            '#' => { chars.next(); column += 1; tokens.push(Token::PrivateField); }
+            '(' => { chars.next(); column += 1; tokens.push(Token::Symbol("(".to_string())); }
+            ')' => { chars.next(); column += 1; tokens.push(Token::Symbol(")".to_string())); }
+            '{' => { chars.next(); column += 1; tokens.push(Token::Symbol("{".to_string())); }
+            '}' => { chars.next(); column += 1; tokens.push(Token::Symbol("}".to_string())); }
+            '[' => { chars.next(); column += 1; tokens.push(Token::Symbol("[".to_string())); }
+            ']' => { chars.next(); column += 1; tokens.push(Token::Symbol("]".to_string())); }
+            '.' => { chars.next(); column += 1; tokens.push(Token::Symbol(".".to_string())); }
+            ';' => { chars.next(); column += 1; tokens.push(Token::Symbol(";".to_string())); }
+            ',' => { chars.next(); column += 1; tokens.push(Token::Symbol(",".to_string())); }
+            ':' => { chars.next(); column += 1; tokens.push(Token::Symbol(":".to_string())); }
+            '?' => { chars.next(); column += 1; tokens.push(Token::Symbol("?".to_string())); }
+            '!' => { chars.next(); column += 1; tokens.push(Token::Symbol("!".to_string())); }
+            '~' => { chars.next(); column += 1; tokens.push(Token::Symbol("~".to_string())); }
+            '=' => { chars.next(); column += 1; tokens.push(Token::Symbol("=".to_string())); }
+            '<' => { chars.next(); column += 1; tokens.push(Token::Symbol("<".to_string())); }
+            '>' => { chars.next(); column += 1; tokens.push(Token::Symbol(">".to_string())); }
+            '+' => { chars.next(); column += 1; tokens.push(Token::Symbol("+".to_string())); }
+            '-' => { chars.next(); column += 1; tokens.push(Token::Symbol("-".to_string())); }
+            '*' => { chars.next(); column += 1; tokens.push(Token::Symbol("*".to_string())); }
+            '/' => { chars.next(); column += 1; tokens.push(Token::Symbol("/".to_string())); }
+            '%' => { chars.next(); column += 1; tokens.push(Token::Symbol("%".to_string())); }
+            '&' => { chars.next(); column += 1; tokens.push(Token::Symbol("&".to_string())); }
+            '|' => { chars.next(); column += 1; tokens.push(Token::Symbol("|".to_string())); }
+            '^' => { chars.next(); column += 1; tokens.push(Token::Symbol("^".to_string())); }
+            '#' => { chars.next(); column += 1; tokens.push(Token::Symbol("#".to_string())); }
             _ => { chars.next(); column += 1; }
         }
     }
