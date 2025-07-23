@@ -1,0 +1,11 @@
+[package]
+name = "v8_vm"
+version = "0.1.0"
+edition = "2021"
+description = "Virtual Machine for V8-Rust JavaScript engine"
+license = "MIT"
+
+[dependencies]
+v8_ast = { path = "../v8_ast" }
+v8_runtime = { path = "../v8_runtime" }
+thiserror = "1.0" 

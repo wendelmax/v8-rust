@@ -1,7 +1,21 @@
 [workspace]
 members = [
-    "crates/parser",
-    "crates/runtime",
-    "crates/vm",
-    "crates/api"
+    "crates/v8_lexer",
+    "crates/v8_ast", 
+    "crates/v8_parser",
+    "crates/v8_runtime",
+    "crates/v8_vm",
+    "crates/v8_gc",
+    "crates/v8_api",
 ]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["V8-Rust Team"]
+description = "A modern JavaScript engine written in Rust"
+
+[workspace.dependencies]
+thiserror = "1.0"
+serde = { version = "1.0", features = ["derive"] }

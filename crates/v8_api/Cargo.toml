@@ -1,0 +1,19 @@
+[package]
+name = "v8_api"
+version = "0.1.0"
+edition = "2021"
+description = "Public API for V8-Rust JavaScript engine"
+license = "MIT"
+
+[dependencies]
+v8_lexer = { path = "../v8_lexer" }
+v8_ast = { path = "../v8_ast" }
+v8_parser = { path = "../v8_parser" }
+v8_runtime = { path = "../v8_runtime" }
+v8_vm = { path = "../v8_vm" }
+v8_gc = { path = "../v8_gc" }
+thiserror = "1.0"
+
+[[bin]]
+name = "v8_rust"
+path = "src/main.rs" 

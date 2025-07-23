@@ -1,0 +1,9 @@
+[package]
+name = "v8_ast"
+version = "0.1.0"
+edition = "2021"
+description = "Abstract Syntax Tree for V8-Rust JavaScript engine"
+license = "MIT"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] } 

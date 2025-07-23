@@ -1,0 +1,9 @@
+[package]
+name = "v8_gc"
+version = "0.1.0"
+edition = "2021"
+description = "Garbage Collector for V8-Rust JavaScript engine"
+license = "MIT"
+
+[dependencies]
+thiserror = "1.0" 
