@@ -28,6 +28,7 @@ pub enum Node {
     ReturnStatement(ReturnStatement),
     BreakStatement(BreakStatement),
     ContinueStatement(ContinueStatement),
+    CatchClause(CatchClause),
     LabeledStatement(LabeledStatement),
     WithStatement(WithStatement),
     DebuggerStatement(DebuggerStatement),
@@ -81,7 +82,7 @@ pub struct FunctionDeclaration {
     pub params: Vec<Node>,
     pub body: Box<Node>,
     pub generator: bool,
-    pub async: bool,
+    pub r#async: bool,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -235,7 +236,7 @@ pub struct ForOfStatement {
     pub left: Box<Node>,
     pub right: Box<Node>,
     pub body: Box<Node>,
-    pub await: bool,
+    pub r#await: bool,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -368,7 +369,7 @@ pub struct ArrowFunctionExpression {
     pub params: Vec<Node>,
     pub body: Box<Node>,
     pub expression: bool,
-    pub async: bool,
+    pub r#async: bool,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -377,7 +378,7 @@ pub struct FunctionExpression {
     pub params: Vec<Node>,
     pub body: Box<Node>,
     pub generator: bool,
-    pub async: bool,
+    pub r#async: bool,
 }
 
 #[derive(Debug, Clone, PartialEq)]
