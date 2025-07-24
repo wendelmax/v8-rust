@@ -5,12 +5,15 @@ use crate::stack::Stack;
 use crate::frame::Frame;
 use crate::registers::Registers;
 use crate::instructions::Instruction;
+use crate::value::Value;
+use crate::heap::Heap;
 
 pub struct Executor {
     pub stack: Stack,
     pub frame: Frame,
     pub registers: Registers,
-    pub globals: Vec<i64>, // Variáveis globais
+    pub heap: Heap,
+    pub globals: Vec<Value>, // Variáveis globais
 }
 
 impl Executor {
@@ -19,70 +22,110 @@ impl Executor {
             stack: Stack::new(),
             frame: Frame::new(),
             registers: Registers::new(),
-            globals: vec![0i64; 32], // 32 variáveis globais
+            heap: Heap::new(),
+            globals: vec![Value::Undefined; 32], // 32 variáveis globais
         }
     }
 
-    pub fn execute(&mut self, bytecode: &Bytecode, constants: &[i64]) {
+    pub fn execute(&mut self, bytecode: &Bytecode, constants: &[Value]) {
         let mut ip = 0;
-        let mut locals = vec![0i64; 16]; // Exemplo: 16 variáveis locais
+        let mut locals = vec![Value::Undefined; 16]; // 16 variáveis locais
         let mut call_stack = Vec::new(); // Stack de chamadas para Return
         
         while ip < bytecode.instructions.len() {
             match &bytecode.instructions[ip] {
                 Instruction::PushConst(idx) => {
-                    let value = constants.get(*idx).copied().unwrap_or(0);
+                    let value = constants.get(*idx).cloned().unwrap_or(Value::Undefined);
                     self.stack.push(value);
                 }
                 Instruction::Add => {
                     let b = self.stack.pop().unwrap();
                     let a = self.stack.pop().unwrap();
-                    self.stack.push(a + b);
+                    // Implementar adição para diferentes tipos
+                    match (a.clone(), b.clone()) {
+                        (Value::Number(a), Value::Number(b)) => {
+                            self.stack.push(Value::Number(a + b));
+                        }
+                        _ => {
+                            // Para outros tipos, converter para string e concatenar
+                            let a_str = format!("{:?}", a);
+                            let b_str = format!("{:?}", b);
+                            self.stack.push(Value::String(format!("{}{}", a_str, b_str)));
+                        }
+                    }
                 }
                 Instruction::Sub => {
                     let b = self.stack.pop().unwrap();
                     let a = self.stack.pop().unwrap();
-                    self.stack.push(a - b);
+                    if let (Value::Number(a), Value::Number(b)) = (a, b) {
+                        self.stack.push(Value::Number(a - b));
+                    } else {
+                        self.stack.push(Value::Number(f64::NAN));
+                    }
                 }
                 Instruction::Mul => {
                     let b = self.stack.pop().unwrap();
                     let a = self.stack.pop().unwrap();
-                    self.stack.push(a * b);
+                    if let (Value::Number(a), Value::Number(b)) = (a, b) {
+                        self.stack.push(Value::Number(a * b));
+                    } else {
+                        self.stack.push(Value::Number(f64::NAN));
+                    }
                 }
                 Instruction::Div => {
                     let b = self.stack.pop().unwrap();
                     let a = self.stack.pop().unwrap();
-                    self.stack.push(a / b);
+                    if let (Value::Number(a), Value::Number(b)) = (a, b) {
+                        self.stack.push(Value::Number(a / b));
+                    } else {
+                        self.stack.push(Value::Number(f64::NAN));
+                    }
                 }
                 Instruction::Eq => {
                     let b = self.stack.pop().unwrap();
                     let a = self.stack.pop().unwrap();
-                    self.stack.push(if a == b { 1 } else { 0 });
+                    self.stack.push(Value::Boolean(a == b));
                 }
                 Instruction::Ne => {
                     let b = self.stack.pop().unwrap();
                     let a = self.stack.pop().unwrap();
-                    self.stack.push(if a != b { 1 } else { 0 });
+                    self.stack.push(Value::Boolean(a != b));
                 }
                 Instruction::Lt => {
                     let b = self.stack.pop().unwrap();
                     let a = self.stack.pop().unwrap();
-                    self.stack.push(if a < b { 1 } else { 0 });
+                    if let (Value::Number(a), Value::Number(b)) = (a, b) {
+                        self.stack.push(Value::Boolean(a < b));
+                    } else {
+                        self.stack.push(Value::Boolean(false));
+                    }
                 }
                 Instruction::Gt => {
                     let b = self.stack.pop().unwrap();
                     let a = self.stack.pop().unwrap();
-                    self.stack.push(if a > b { 1 } else { 0 });
+                    if let (Value::Number(a), Value::Number(b)) = (a, b) {
+                        self.stack.push(Value::Boolean(a > b));
+                    } else {
+                        self.stack.push(Value::Boolean(false));
+                    }
                 }
                 Instruction::Le => {
                     let b = self.stack.pop().unwrap();
                     let a = self.stack.pop().unwrap();
-                    self.stack.push(if a <= b { 1 } else { 0 });
+                    if let (Value::Number(a), Value::Number(b)) = (a, b) {
+                        self.stack.push(Value::Boolean(a <= b));
+                    } else {
+                        self.stack.push(Value::Boolean(false));
+                    }
                 }
                 Instruction::Ge => {
                     let b = self.stack.pop().unwrap();
                     let a = self.stack.pop().unwrap();
-                    self.stack.push(if a >= b { 1 } else { 0 });
+                    if let (Value::Number(a), Value::Number(b)) = (a, b) {
+                        self.stack.push(Value::Boolean(a >= b));
+                    } else {
+                        self.stack.push(Value::Boolean(false));
+                    }
                 }
                 Instruction::Jump(target) => {
                     ip = *target;
@@ -90,20 +133,20 @@ impl Executor {
                 }
                 Instruction::JumpIfTrue(target) => {
                     let cond = self.stack.pop().unwrap();
-                    if cond != 0 {
+                    if cond.as_bool().unwrap_or(false) {
                         ip = *target;
                         continue;
                     }
                 }
                 Instruction::JumpIfFalse(target) => {
                     let cond = self.stack.pop().unwrap();
-                    if cond == 0 {
+                    if !cond.as_bool().unwrap_or(false) {
                         ip = *target;
                         continue;
                     }
                 }
                 Instruction::LoadLocal(idx) => {
-                    let value = locals.get(*idx).copied().unwrap_or(0);
+                    let value = locals.get(*idx).cloned().unwrap_or(Value::Undefined);
                     self.stack.push(value);
                 }
                 Instruction::StoreLocal(idx) => {
@@ -113,10 +156,11 @@ impl Executor {
                     }
                 }
                 Instruction::LoadGlobal(idx) => {
-                    let value = self.globals.get(*idx).copied().unwrap_or(0);
-                    self.stack.push(value);
+                    // Implementar acesso a variáveis globais
+                    self.stack.push(self.globals.get(*idx).cloned().unwrap_or(Value::Undefined));
                 }
                 Instruction::StoreGlobal(idx) => {
+                    // Implementar armazenamento em variáveis globais
                     let value = self.stack.pop().unwrap();
                     if let Some(slot) = self.globals.get_mut(*idx) {
                         *slot = value;
@@ -161,8 +205,37 @@ impl Executor {
                     self.stack.pop();
                 }
                 Instruction::Dup => {
-                    if let Some(top) = self.stack.values.last().copied() {
+                    if let Some(top) = self.stack.values.last().cloned() {
                         self.stack.push(top);
+                    }
+                }
+                Instruction::NewObject => {
+                    let handle = self.heap.alloc_object();
+                    self.stack.push(Value::Object(handle));
+                }
+                Instruction::NewArray(_size) => {
+                    let handle = self.heap.alloc_array();
+                    self.stack.push(Value::Array(handle));
+                }
+                Instruction::SetProperty => {
+                    let value = self.stack.pop().unwrap();
+                    let key = self.stack.pop().unwrap();
+                    let obj = self.stack.pop().unwrap();
+                    if let (Value::Object(handle), Value::String(key)) = (obj, key) {
+                        self.heap.set_object_property(handle, key, value);
+                    }
+                }
+                Instruction::GetProperty => {
+                    let key = self.stack.pop().unwrap();
+                    let obj = self.stack.pop().unwrap();
+                    if let (Value::Object(handle), Value::String(key)) = (obj, key) {
+                        if let Some(val) = self.heap.get_object_property(handle, &key) {
+                            self.stack.push(val.clone());
+                        } else {
+                            self.stack.push(Value::Undefined);
+                        }
+                    } else {
+                        self.stack.push(Value::Undefined);
                     }
                 }
                 _ => todo!("Instrução não implementada ainda"),

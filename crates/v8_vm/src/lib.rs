@@ -9,6 +9,8 @@ pub mod frame;
 pub mod instructions;
 pub mod registers;
 pub mod stack;
+pub mod value;
+pub mod heap;
 
 pub use bytecode::Bytecode;
 pub use executor::Executor;

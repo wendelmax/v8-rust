@@ -2,7 +2,6 @@
 //! 
 //! This module provides the core value system for JavaScript values.
 
-use std::collections::HashMap;
 use std::rc::Rc;
 use std::cell::RefCell;
 

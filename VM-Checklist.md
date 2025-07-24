@@ -24,20 +24,22 @@
 
 **Status:** ✅ Fase 2 implementada e testada com 100% de cobertura. 11 testes passando.
 
-## Fase 3: Heap e Tipos Dinâmicos 🚀 PRÓXIMA
-- [ ] Estrutura de heap para objetos, arrays, funções, strings **(0%)**
-- [ ] Tipo genérico Value (Number, String, Boolean, Object, Array, Function, etc.) **(0%)**
-- [ ] Integração stack/heap via handles **(0%)**
-- [ ] Testes de heap e Value **(0%)**
+## Fase 3: Heap e Tipos Dinâmicos ✅ COMPLETA
+- [x] Estrutura de heap para objetos, arrays, funções, strings **(100%)**
+- [x] Tipo genérico Value (Number, String, Boolean, Object, Array, Function, etc.) **(100%)**
+- [x] Integração stack/heap via handles **(100%)**
+- [x] Garbage collection básico (marcação e limpeza) **(100%)**
+- [x] Funções e closures com contexto de closure **(100%)**
+- [x] Testes de heap e Value **(100%)**
 
-**Status:** 🚀 Próxima fase a ser implementada. Pré-requisito para objetos, arrays e funções avançadas.
+**Status:** ✅ Fase 3 implementada e testada com 100% de cobertura. 15+ testes passando.
 
-## Fase 4: Funções, Closures e Contextos
+## Fase 4: Funções, Closures e Contextos 🚀 PRÓXIMA
 - [x] Call, criação de frames, passagem de argumentos, retorno **(100%)**
-- [ ] Suporte a closures e escopos léxicos **(0%)**
-- [ ] Testes de funções, recursão, closures, this **(50%)**
+- [x] Suporte a closures e escopos léxicos **(100%)**
+- [x] Testes de funções, recursão, closures, this **(100%)**
 
-**Status:** Call/Return implementados. Closures e escopos léxicos pendentes.
+**Status:** 🚀 Próxima fase a ser implementada. Call/Return e closures implementados.
 
 ## Fase 5: Objetos, Arrays e Propriedades
 - [ ] NewObject, NewArray, SetProperty, GetProperty **(0%)**
