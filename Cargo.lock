@@ -480,6 +480,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "v8_bytecode"
+version = "0.1.0"
+dependencies = [
+ "v8_ast",
+]
+
+[[package]]
 name = "v8_gc"
 version = "0.1.0"
 dependencies = [
