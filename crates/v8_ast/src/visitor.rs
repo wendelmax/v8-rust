@@ -29,6 +29,7 @@ pub trait Visitor {
             Node::DoWhileStatement(stmt) => self.visit_do_while_statement(stmt),
             Node::SwitchStatement(stmt) => self.visit_switch_statement(stmt),
             Node::TryStatement(stmt) => self.visit_try_statement(stmt),
+            Node::CatchClause(clause) => self.visit_catch_clause(clause),
             Node::ThrowStatement(stmt) => self.visit_throw_statement(stmt),
             Node::ReturnStatement(stmt) => self.visit_return_statement(stmt),
             Node::BreakStatement(stmt) => self.visit_break_statement(stmt),
@@ -86,6 +87,7 @@ pub trait Visitor {
     fn visit_do_while_statement(&mut self, _stmt: &crate::DoWhileStatement) -> Self::Output { unimplemented!() }
     fn visit_switch_statement(&mut self, _stmt: &crate::SwitchStatement) -> Self::Output { unimplemented!() }
     fn visit_try_statement(&mut self, _stmt: &crate::TryStatement) -> Self::Output { unimplemented!() }
+    fn visit_catch_clause(&mut self, _clause: &crate::CatchClause) -> Self::Output { unimplemented!() }
     fn visit_throw_statement(&mut self, _stmt: &crate::ThrowStatement) -> Self::Output { unimplemented!() }
     fn visit_return_statement(&mut self, _stmt: &crate::ReturnStatement) -> Self::Output { unimplemented!() }
     fn visit_break_statement(&mut self, _stmt: &crate::BreakStatement) -> Self::Output { unimplemented!() }

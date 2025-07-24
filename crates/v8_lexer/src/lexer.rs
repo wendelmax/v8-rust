@@ -59,7 +59,7 @@ impl Lexer {
     }
     
     /// Get the next token from the source
-    fn next_token(&mut self) -> Result<Token, LexerError> {
+    pub fn next_token(&mut self) -> Result<Token, LexerError> {
         self.skip_whitespace();
         
         if self.pos >= self.source.len() {

@@ -1,6 +1,7 @@
 //! AST node definitions for V8-Rust JavaScript engine
 
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 /// Represents a position in the source code
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -12,6 +13,18 @@ pub struct Position {
 impl Position {
     pub fn new(line: usize, column: usize) -> Self {
         Self { line, column }
+    }
+}
+
+impl Default for Position {
+    fn default() -> Self {
+        Position { line: 1, column: 1 }
+    }
+}
+
+impl fmt::Display for Position {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}:{}", self.line, self.column)
     }
 }
 
@@ -72,6 +85,7 @@ pub enum Node {
     DoWhileStatement(DoWhileStatement),
     SwitchStatement(SwitchStatement),
     TryStatement(TryStatement),
+    CatchClause(CatchClause),
     ThrowStatement(ThrowStatement),
     ReturnStatement(ReturnStatement),
     BreakStatement(BreakStatement),
