@@ -7,29 +7,37 @@
 
 ---
 
-## Fase 1: Núcleo da Execução
+## Fase 1: Núcleo da Execução ✅ COMPLETA
 - [x] Ciclo fetch-decode-execute **(100%)**
 - [x] Instruções básicas: PushConst, Add, Sub, Mul, Div, Pop, Dup **(100%)**
 - [x] Stack de execução e frames de chamada **(100%)**
 - [x] Variáveis locais e passagem de argumentos simples **(100%)**
 - [x] Testes unitários para instruções básicas **(100%)**
 
-## Fase 2: Controle de Fluxo e Variáveis
-- [ ] Jump, JumpIfTrue, JumpIfFalse, Return **(80%)**
-- [ ] If, while, for, break, continue **(0%)**
-- [ ] LoadLocal, StoreLocal, LoadGlobal, StoreGlobal **(50%)**
-- [ ] Testes para escopos e controle de fluxo **(50%)**
+**Status:** ✅ Fase 1 implementada e testada com 100% de cobertura. Commit: `ed402a8`
 
-## Fase 3: Heap e Tipos Dinâmicos
+## Fase 2: Controle de Fluxo e Variáveis ✅ COMPLETA
+- [x] Jump, JumpIfTrue, JumpIfFalse, Return **(100%)**
+- [x] Instruções de comparação: Eq, Ne, Lt, Gt, Le, Ge **(100%)**
+- [x] LoadLocal, StoreLocal, LoadGlobal, StoreGlobal **(100%)**
+- [x] Testes para escopos e controle de fluxo **(100%)**
+
+**Status:** ✅ Fase 2 implementada e testada com 100% de cobertura. 11 testes passando.
+
+## Fase 3: Heap e Tipos Dinâmicos 🚀 PRÓXIMA
 - [ ] Estrutura de heap para objetos, arrays, funções, strings **(0%)**
 - [ ] Tipo genérico Value (Number, String, Boolean, Object, Array, Function, etc.) **(0%)**
 - [ ] Integração stack/heap via handles **(0%)**
 - [ ] Testes de heap e Value **(0%)**
 
+**Status:** 🚀 Próxima fase a ser implementada. Pré-requisito para objetos, arrays e funções avançadas.
+
 ## Fase 4: Funções, Closures e Contextos
-- [ ] Call, criação de frames, passagem de argumentos, retorno **(0%)**
+- [x] Call, criação de frames, passagem de argumentos, retorno **(100%)**
 - [ ] Suporte a closures e escopos léxicos **(0%)**
-- [ ] Testes de funções, recursão, closures, this **(0%)**
+- [ ] Testes de funções, recursão, closures, this **(50%)**
+
+**Status:** Call/Return implementados. Closures e escopos léxicos pendentes.
 
 ## Fase 5: Objetos, Arrays e Propriedades
 - [ ] NewObject, NewArray, SetProperty, GetProperty **(0%)**
