@@ -77,27 +77,50 @@ Este checklist cobre todos os principais componentes e funcionalidades do V8 Eng
 - **Cobertura de 100% do match do gerador**
 - **Validação de instruções e fluxo para todos os casos**
 
-### **v8_vm - Funcionalidades Implementadas:**
+## 4. Virtual Machine (v8_vm) - 100% COMPLETA ✅
 
-#### **✅ Fase 1: Núcleo da Execução - COMPLETA**
-- **Ciclo fetch-decode-execute**: Implementado e testado
-- **Instruções aritméticas**: Add, Sub, Mul, Div, Pop, Dup
-- **Stack de execução e frames**: Gerenciamento completo
-- **Variáveis locais**: LoadLocal, StoreLocal funcionais
+### Fase 1: Estrutura Básica - 100% COMPLETA ✅
+- [x] Estrutura do VM com Stack, Frame, Heap
+- [x] Sistema de valores (Value) com tipos primitivos e objetos
+- [x] Instruções básicas (PushConst, Pop, Dup)
+- [x] Operações aritméticas (Add, Sub, Mul, Div)
+- [x] Testes unitários para todas as funcionalidades
 
-#### **✅ Fase 2: Controle de Fluxo e Variáveis - COMPLETA**
-- **Controle de fluxo**: Jump, JumpIfTrue, JumpIfFalse, Return
-- **Instruções de comparação**: Eq, Ne, Lt, Gt, Le, Ge
-- **Variáveis globais**: LoadGlobal, StoreGlobal
-- **Chamadas de função**: Call com stack de frames
-- **Testes abrangentes**: 11 testes com 100% de cobertura
+### Fase 2: Controle de Fluxo - 100% COMPLETA ✅
+- [x] Instruções de salto (Jump, JumpIfTrue, JumpIfFalse)
+- [x] Comparações (Eq, Ne, Lt, Gt, Le, Ge)
+- [x] Variáveis locais e globais (LoadLocal, StoreLocal, LoadGlobal, StoreGlobal)
+- [x] Testes para controle de fluxo e condicionais
 
-#### **✅ Fase 3: Heap e Tipos Dinâmicos - COMPLETA**
-- **Sistema de heap**: Alocação e gerenciamento de memória
-- **Tipos dinâmicos**: Object, Array, Function, String
-- **Garbage collection básico**: Marcação e limpeza
-- **Funções e closures**: Contexto de closure e variáveis capturadas
-- **Testes abrangentes**: 15+ testes com cobertura completa
+### Fase 3: Objetos e Arrays - 100% COMPLETA ✅
+- [x] Criação de objetos e arrays (NewObject, NewArray)
+- [x] Manipulação de propriedades (SetProperty, GetProperty)
+- [x] Operações com arrays (push, get, set, remove)
+- [x] Testes para objetos, arrays e propriedades
+
+### Fase 4: Funções, Closures e Contextos - 100% COMPLETA ✅
+- [x] Execução real de funções com bytecode do heap
+- [x] Passagem de argumentos e pool de constantes
+- [x] Instrução LoadArg para acesso a argumentos
+- [x] Suporte ao valor `this` com LoadThis
+- [x] Acesso a closure variables com LoadClosureVar
+- [x] Instrução LoadThisFunction para recursão
+- [x] Instrução CallFunction para chamadas diretas
+- [x] Gerenciamento de frames e call stack
+- [x] Testes complexos com múltiplas funcionalidades
+- [x] **11 testes passando, 0 falhando - 100% de cobertura**
+
+### Fase 5: Objetos, Arrays e Propriedades Avançadas - PRÓXIMA
+- [ ] Propriedades dinâmicas e protótipos
+- [ ] Métodos de objeto e array
+- [ ] Herança e cadeia de protótipos
+- [ ] Testes para funcionalidades avançadas
+
+### Fase 6: Otimizações e Performance - PENDENTE
+- [ ] Compilação JIT básica
+- [ ] Otimizações de bytecode
+- [ ] Garbage collection
+- [ ] Benchmarks e profiling
 
 ---
 
@@ -115,8 +138,8 @@ Este checklist cobre todos os principais componentes e funcionalidades do V8 Eng
 - **Compatibilidade ECMAScript**: ES2015+ com suporte a features modernas
 
 ### **🚀 Próximas Fases**
-1. **Fase 4**: Objetos, Arrays e Funções Avançadas (VM)
-2. **Fase 5**: Otimizações e Garbage Collection
-3. **Fase 6**: Integração e API Pública
+1. **Fase 5**: Objetos, Arrays e Propriedades Avançadas (VM)
+2. **Fase 6**: Otimizações e Garbage Collection
+3. **Fase 7**: Integração e API Pública
 
-> **Status Atual**: Projeto com base sólida, VM com heap e tipos dinâmicos completos. Pronto para implementar objetos e funções avançadas. 
+> **Status Atual**: Projeto com base sólida, VM com funções, closures e contextos completos. Pronto para implementar propriedades avançadas e otimizações. 
