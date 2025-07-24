@@ -10,6 +10,7 @@ Este checklist cobre todos os principais componentes e funcionalidades do V8 Eng
 - [x] Análise Semântica - **100% COMPLETO**
 - [x] Geração de Bytecode (Ignition equivalent) - **100% COMPLETO**
 - [ ] Máquina Virtual para execução de Bytecode
+    - ([detalhes e progresso](./VM-Checklist.md))
 - [ ] Compilador JIT (TurboFan equivalent)
 - [ ] Otimizador de Bytecode/Machine Code
 - [ ] Deotimização (fallback para bytecode)
