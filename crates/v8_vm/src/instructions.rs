@@ -13,7 +13,7 @@ pub enum Instruction {
     // Comparison
     Eq, Ne, Lt, Gt, Le, Ge, StrictEq, StrictNe,
     // Variables
-    LoadGlobal(String), StoreGlobal(String),
+    LoadGlobal(usize), StoreGlobal(usize),
     LoadLocal(usize), StoreLocal(usize),
     // Control flow
     Jump(usize), JumpIfTrue(usize), JumpIfFalse(usize),

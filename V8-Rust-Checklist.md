@@ -9,8 +9,8 @@ Este checklist cobre todos os principais componentes e funcionalidades do V8 Eng
 - [x] Analisador Sintático (Parser) - **100% COMPLETO**
 - [x] Análise Semântica - **100% COMPLETO**
 - [x] Geração de Bytecode (Ignition equivalent) - **100% COMPLETO**
-- [ ] Máquina Virtual para execução de Bytecode
-    - ([detalhes e progresso](./VM-Checklist.md))
+- [x] Máquina Virtual para execução de Bytecode - **Fases 1-2: 100% COMPLETAS**
+    - ([detalhes e progresso](./VM-Checklist.md)) - Fase 1: `ed402a8`, Fase 2: em progresso
 - [ ] Compilador JIT (TurboFan equivalent)
 - [ ] Otimizador de Bytecode/Machine Code
 - [ ] Deotimização (fallback para bytecode)
@@ -77,6 +77,21 @@ Este checklist cobre todos os principais componentes e funcionalidades do V8 Eng
 - **Cobertura de 100% do match do gerador**
 - **Validação de instruções e fluxo para todos os casos**
 
+### **v8_vm - Funcionalidades Implementadas:**
+
+#### **✅ Fase 1: Núcleo da Execução - COMPLETA**
+- **Ciclo fetch-decode-execute**: Implementado e testado
+- **Instruções aritméticas**: Add, Sub, Mul, Div, Pop, Dup
+- **Stack de execução e frames**: Gerenciamento completo
+- **Variáveis locais**: LoadLocal, StoreLocal funcionais
+
+#### **✅ Fase 2: Controle de Fluxo e Variáveis - COMPLETA**
+- **Controle de fluxo**: Jump, JumpIfTrue, JumpIfFalse, Return
+- **Instruções de comparação**: Eq, Ne, Lt, Gt, Le, Ge
+- **Variáveis globais**: LoadGlobal, StoreGlobal
+- **Chamadas de função**: Call com stack de frames
+- **Testes abrangentes**: 11 testes com 100% de cobertura
+
 ---
 
 ## 🎉 Marcos Alcançados
@@ -93,8 +108,9 @@ Este checklist cobre todos os principais componentes e funcionalidades do V8 Eng
 - **Compatibilidade ECMAScript**: ES2015+ com suporte a features modernas
 
 ### **🚀 Próximas Fases**
-1. **Fase 2**: Máquina Virtual para execução de Bytecode
-2. **Fase 3**: Otimizações e Garbage Collection
-3. **Fase 4**: Integração e API Pública
+1. **Fase 3**: Heap e Tipos Dinâmicos (VM)
+2. **Fase 4**: Objetos, Arrays e Funções Avançadas (VM)
+3. **Fase 5**: Otimizações e Garbage Collection
+4. **Fase 6**: Integração e API Pública
 
-> **Status Atual**: Projeto com base sólida, pronto para avançar para a implementação da Máquina Virtual (VM). 
+> **Status Atual**: Projeto com base sólida, VM com controle de fluxo completo. Pronto para implementar heap e tipos dinâmicos. 
