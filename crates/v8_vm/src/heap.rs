@@ -2,16 +2,17 @@
 
 use std::collections::HashMap;
 use crate::value::Value;
+use crate::bytecode::Bytecode;
 
 #[derive(Debug, Clone)]
 pub enum HeapEntry {
     Object(HashMap<String, Value>),
     Array(Vec<Value>),
     Function {
-        bytecode: Vec<u8>, // Futuro: bytecode da função
+        bytecode: Bytecode, // Bytecode real da função
         arg_count: usize,
         local_count: usize,
-        closure_vars: HashMap<String, Value>, // Variáveis capturadas do escopo externo
+        closure_vars: HashMap<String, Value>,
     },
     String(String),
 }
@@ -35,19 +36,19 @@ impl Heap {
         self.entries.push(HeapEntry::Array(Vec::new()));
         idx
     }
-    pub fn alloc_function(&mut self, arg_count: usize, local_count: usize) -> usize {
+    pub fn alloc_function(&mut self, bytecode: Bytecode, arg_count: usize, local_count: usize) -> usize {
         let idx = self.entries.len();
         self.entries.push(HeapEntry::Function {
-            bytecode: Vec::new(),
+            bytecode,
             arg_count,
             local_count,
             closure_vars: HashMap::new(),
         });
         idx
     }
-    pub fn get_function_info(&self, handle: usize) -> Option<(&usize, &usize, &HashMap<String, Value>)> {
-        if let Some(HeapEntry::Function { arg_count, local_count, closure_vars, .. }) = self.entries.get(handle) {
-            Some((arg_count, local_count, closure_vars))
+    pub fn get_function_info(&self, handle: usize) -> Option<(&Bytecode, &usize, &usize, &HashMap<String, Value>)> {
+        if let Some(HeapEntry::Function { bytecode, arg_count, local_count, closure_vars }) = self.entries.get(handle) {
+            Some((bytecode, arg_count, local_count, closure_vars))
         } else {
             None
         }

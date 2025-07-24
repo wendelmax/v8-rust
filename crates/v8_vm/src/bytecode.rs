@@ -2,6 +2,7 @@
 
 use crate::instructions::Instruction;
 
+#[derive(Debug, Clone)]
 pub struct Bytecode {
     pub instructions: Vec<Instruction>,
     // Futuramente: pool de constantes, metadados, etc.

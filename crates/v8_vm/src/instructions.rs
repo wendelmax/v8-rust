@@ -15,6 +15,10 @@ pub enum Instruction {
     // Variables
     LoadGlobal(usize), StoreGlobal(usize),
     LoadLocal(usize), StoreLocal(usize),
+    LoadArg(usize), // Nova instrução para acessar argumentos da função
+    LoadThisFunction, // Nova instrução para acessar a função atual (útil para recursão)
+    LoadThis, // Nova instrução para acessar o valor de this
+    LoadClosureVar(String), // Nova instrução para acessar variáveis de closure
     // Control flow
     Jump(usize), JumpIfTrue(usize), JumpIfFalse(usize),
     // Functions
@@ -33,4 +37,5 @@ pub enum Instruction {
     Spread, Destructure, OptionalChain, NullishCoalesce,
     // Literals
     PushNull, PushUndefined, PushTrue, PushFalse, PushSymbol(usize), PushBigInt(usize),
+    CallFunction(usize, usize), // (handle, argc) - chama função por handle direto
 } 
