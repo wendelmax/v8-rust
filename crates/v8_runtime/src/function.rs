@@ -61,12 +61,12 @@ impl Function {
     }
     
     /// Call the function
-    pub fn call(&self, this: Value, args: &[Value]) -> Result<Value, String> {
+    pub fn call(&self, _this: Value, args: &[Value]) -> Result<Value, String> {
         match &self.function_type {
             FunctionType::Native(func) => {
                 func(args)
             }
-            FunctionType::User(user_func) => {
+            FunctionType::User(_user_func) => {
                 // For now, return undefined for user functions
                 // This will be implemented when we have a proper interpreter
                 Ok(Value::Undefined)
@@ -75,7 +75,7 @@ impl Function {
     }
     
     /// Construct the function (new operator)
-    pub fn construct(&self, args: &[Value]) -> Result<Object, String> {
+    pub fn construct(&self, _args: &[Value]) -> Result<Object, String> {
         // For now, create a new object
         // This will be implemented properly when we have constructor support
         Ok(Object::new())

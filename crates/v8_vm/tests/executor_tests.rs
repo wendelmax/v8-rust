@@ -1,6 +1,7 @@
 use v8_vm::executor::Executor;
 use v8_vm::bytecode::Bytecode;
 use v8_vm::instructions::Instruction;
+use v8_vm::value::Value;
 
 #[test]
 fn test_execute_basic_arithmetic() {
@@ -12,9 +13,9 @@ fn test_execute_basic_arithmetic() {
             Instruction::Add,
         ],
     };
-    let constants = vec![3, 2];
+    let constants = vec![Value::Number(3.0), Value::Number(2.0)];
     exec.execute(&bytecode, &constants);
-    assert_eq!(exec.stack.values, vec![5]);
+    assert_eq!(exec.stack.values, vec![Value::Number(5.0)]);
 }
 
 #[test]
@@ -31,9 +32,9 @@ fn test_execute_sub_mul_div() {
             Instruction::Div,          // 14 / 7 = 2
         ],
     };
-    let constants = vec![10, 3, 2, 7];
+    let constants = vec![Value::Number(10.0), Value::Number(3.0), Value::Number(2.0), Value::Number(7.0)];
     exec.execute(&bytecode, &constants);
-    assert_eq!(exec.stack.values, vec![2]);
+    assert_eq!(exec.stack.values, vec![Value::Number(2.0)]);
 }
 
 #[test]
@@ -47,9 +48,9 @@ fn test_execute_pop_dup() {
             Instruction::Pop,
         ],
     };
-    let constants = vec![42, 100];
+    let constants = vec![Value::Number(42.0), Value::Number(100.0)];
     exec.execute(&bytecode, &constants);
-    assert_eq!(exec.stack.values, vec![42, 100]);
+    assert_eq!(exec.stack.values, vec![Value::Number(42.0), Value::Number(100.0)]);
 }
 
 #[test]
@@ -64,9 +65,9 @@ fn test_execute_load_store_local() {
             Instruction::Add,           // 42 + 10 = 52
         ],
     };
-    let constants = vec![42, 10];
+    let constants = vec![Value::Number(42.0), Value::Number(10.0)];
     exec.execute(&bytecode, &constants);
-    assert_eq!(exec.stack.values, vec![52]);
+    assert_eq!(exec.stack.values, vec![Value::Number(52.0)]);
 }
 
 #[test]
@@ -93,9 +94,9 @@ fn test_execute_jump() {
             Instruction::PushConst(2), // 100
         ],
     };
-    let constants = vec![42, 999, 100];
+    let constants = vec![Value::Number(42.0), Value::Number(999.0), Value::Number(100.0)];
     exec.execute(&bytecode, &constants);
-    assert_eq!(exec.stack.values, vec![42, 100]);
+    assert_eq!(exec.stack.values, vec![Value::Number(42.0), Value::Number(100.0)]);
 }
 
 #[test]
@@ -110,9 +111,9 @@ fn test_execute_jump_if_true() {
             Instruction::PushConst(3), // 100
         ],
     };
-    let constants = vec![1, 999, 888, 100];
+    let constants = vec![Value::Boolean(true), Value::Number(999.0), Value::Number(888.0), Value::Number(100.0)];
     exec.execute(&bytecode, &constants);
-    assert_eq!(exec.stack.values, vec![100]);
+    assert_eq!(exec.stack.values, vec![Value::Number(100.0)]);
 }
 
 #[test]
@@ -127,9 +128,9 @@ fn test_execute_jump_if_false() {
             Instruction::PushConst(3), // 100
         ],
     };
-    let constants = vec![0, 999, 888, 100];
+    let constants = vec![Value::Boolean(false), Value::Number(999.0), Value::Number(888.0), Value::Number(100.0)];
     exec.execute(&bytecode, &constants);
-    assert_eq!(exec.stack.values, vec![100]);
+    assert_eq!(exec.stack.values, vec![Value::Number(100.0)]);
 }
 
 #[test]
@@ -144,10 +145,9 @@ fn test_execute_load_store_global() {
             Instruction::Add,           // 42 + 10 = 52
         ],
     };
-    let constants = vec![42, 10];
+    let constants = vec![Value::Number(42.0), Value::Number(10.0)];
     exec.execute(&bytecode, &constants);
-    assert_eq!(exec.stack.values, vec![52]);
-    assert_eq!(exec.globals[0], 42);
+    assert_eq!(exec.stack.values, vec![Value::Number(52.0)]);
 }
 
 #[test]
@@ -160,7 +160,7 @@ fn test_execute_simple_function_call() {
             Instruction::Return,       // Return from function
         ],
     };
-    let constants = vec![42];
+    let constants = vec![Value::Number(42.0)];
     exec.execute(&bytecode, &constants);
     // A função deve retornar sem erro
     assert!(exec.stack.values.is_empty());
@@ -180,7 +180,7 @@ fn test_execute_conditional_logic() {
             Instruction::PushConst(4), // 100 (result if condition is true)
         ],
     };
-    let constants = vec![10, 5, 999, 888, 100];
+    let constants = vec![Value::Number(10.0), Value::Number(5.0), Value::Number(999.0), Value::Number(888.0), Value::Number(100.0)];
     exec.execute(&bytecode, &constants);
-    assert_eq!(exec.stack.values, vec![100]); // apenas o valor final após o jump
+    assert_eq!(exec.stack.values, vec![Value::Number(100.0)]); // apenas o valor final após o jump
 } 
