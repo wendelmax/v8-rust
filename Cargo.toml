@@ -7,7 +7,7 @@ members = [
     "crates/v8_runtime",
     "crates/v8_vm",
     "crates/v8_gc",
-    "crates/v8_api",
+    "crates/v8_api", "crates/v8_bytecode",
 ]
 
 [workspace.package]
