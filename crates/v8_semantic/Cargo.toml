@@ -1,0 +1,12 @@
+[package]
+name = "v8_semantic"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+v8_ast = { path = "../v8_ast" }
+v8_parser = { path = "../v8_parser" }
+serde = { version = "1.0", features = ["derive"] }
+
+[dev-dependencies]
+serde_json = "1.0" 
