@@ -515,6 +515,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "v8_semantic"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "v8_ast",
+ "v8_parser",
+]
+
+[[package]]
 name = "v8_vm"
 version = "0.1.0"
 dependencies = [
