@@ -1,9 +1,7 @@
-![JetCrab Logo](assets/jetcrab-logo.png)
-
-# JetCrab: JavaScript Engine in Rust
+# V8-Rust: JavaScript Engine in Rust
 
 ## Overview
-JetCrab is a JavaScript engine inspired by Google's V8 architecture, implemented in Rust. The project covers all stages of modern JavaScript execution pipeline: Lexer, Parser, AST, Semantic Analysis, Bytecode Generation and (in the future) Virtual Machine and JIT.
+This is a JavaScript engine inspired by Google's V8 architecture, implemented in Rust. The project covers all stages of modern JavaScript execution pipeline: Lexer, Parser, AST, Semantic Analysis, Bytecode Generation and (in the future) Virtual Machine and JIT.
 
 ## Project Statistics
 - **Total Lines of Code**: 13,704+ lines of Rust
