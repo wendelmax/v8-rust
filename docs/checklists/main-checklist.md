@@ -11,7 +11,7 @@ This checklist covers all major components and functionalities of the V8 Engine 
 - [x] Bytecode Generation (Ignition equivalent) - **100% COMPLETE**
 - [x] Virtual Machine for Bytecode Execution - **Phases 1-3: 100% COMPLETE**
     - ([details and progress](./VM-Checklist.md)) - Phase 1: `ed402a8`, Phase 2: `complete`, Phase 3: `complete`
-- [ ] JIT Compiler (TurboFan equivalent)
+- [ ] **JIT Compiler (TurboFan equivalent)** - See [JIT Implementation Checklist](./jit-implementation-checklist.md)
 - [ ] Bytecode/Machine Code Optimizer
 - [ ] Deoptimization (fallback to bytecode)
 - [ ] Garbage Collector (Generational, precise, stop-the-world)
@@ -29,7 +29,8 @@ This checklist covers all major components and functionalities of the V8 Engine 
 - [ ] Coroutines/async/await support
 - [ ] Event Loop (basic, for future integration)
 
-## ECMAScript Compatibility
+## ECMAScript Compliance
+- [ ] **Complete ECMAScript Compliance** - See [ECMAScript Compliance Checklist](./ecmascript-compliance-checklist.md)
 - [ ] Implementation of primitive types (Number, String, Boolean, etc)
 - [ ] Implementation of object types (Object, Array, Function, etc)
 - [ ] Implementation of global functions (parseInt, eval, etc)
@@ -140,6 +141,19 @@ This checklist covers all major components and functionalities of the V8 Engine 
 ### **🚀 Next Phases**
 1. **Phase 5**: Advanced Objects, Arrays and Properties (VM)
 2. **Phase 6**: Optimizations and Garbage Collection
-3. **Phase 7**: Integration and Public API
+3. **Phase 7**: Integration and End-to-End Tests
+4. **Phase 8**: Public API and Tools
 
-> **Current Status**: Project with solid foundation, VM with functions, closures and contexts complete. Ready to implement advanced properties and optimizations. 
+### **🎯 Phase 7: Integration and End-to-End Tests - NEXT**
+- [ ] Create `v8_engine` crate for complete integration
+- [ ] Implement `Compiler` (parser + semantic + bytecode)
+- [ ] Implement `Runtime` (bytecode + VM)
+- [ ] Create type converters between `v8_ast::Node` and `v8_vm::value::Value`
+- [ ] First end-to-end test: simple expression (`2 + 3 * 4`)
+- [ ] End-to-end test: variables and assignments (`let x = 5; x + 3`)
+- [ ] End-to-end test: functions and calls (`function add(a, b) { return a + b; }`)
+- [ ] End-to-end test: objects and properties (`{x: 1, y: 2}`)
+- [ ] Complete end-to-end pipeline validation
+- [ ] Integration API documentation
+
+> **Current Status**: Project with solid foundation, VM with functions, closures and contexts complete. Ready to implement advanced properties, optimizations and complete integration. 
