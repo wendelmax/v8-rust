@@ -1,13 +1,15 @@
 //! Value type for the V8-Rust VM
 
+use crate::heap::HandleId;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
     Number(f64),
     String(String),
     Boolean(bool),
-    Object(usize), // handle para o heap
-    Array(usize),  // handle para o heap
-    Function(usize), // handle para o heap
+    Object(HandleId),
+    Array(HandleId),
+    Function(HandleId),
     Null,
     Undefined,
 }

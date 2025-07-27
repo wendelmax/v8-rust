@@ -40,7 +40,7 @@ fn test_closure_variables() {
 
 #[test]
 fn test_function_value_creation() {
-    let func_value = Value::Function(0); // handle 0
+    let func_value = Value::Function(HandleId::from(0));
     assert!(!func_value.is_primitive());
     assert_eq!(func_value.to_string(), "[function]");
     assert!(func_value.to_boolean()); // funções são truthy
@@ -156,8 +156,8 @@ fn test_load_this_function() {
     exec.heap = heap;
     
     println!("=== Teste LoadThisFunction ===");
-    println!("Func handle: {}", func_handle);
-    
+    println!("Func handle: {:?}", func_handle);
+
     // Criar um objeto para ser usado como this
     let obj_handle = exec.heap.alloc_object();
     let this_obj = Value::Object(obj_handle);
