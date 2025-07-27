@@ -1,13 +1,13 @@
 //! Executor for the V8-Rust VM
 
 use crate::bytecode::Bytecode;
-use crate::stack::Stack;
 use crate::frame::Frame;
-use crate::registers::Registers;
-use crate::instructions::Instruction;
-use crate::value::Value;
-use crate::heap::Heap;
 use crate::heap::HeapEntry;
+use crate::heap::{HandleId, Heap};
+use crate::instructions::Instruction;
+use crate::registers::Registers;
+use crate::stack::Stack;
+use crate::value::Value;
 
 pub struct Executor {
     pub stack: Stack,
@@ -240,9 +240,19 @@ impl Executor {
                     }
                 }
                 Instruction::CallFunction(handle, argc) => {
-                    println!("DEBUG: CallFunction({}, {}) - Stack antes: {:?}", handle, argc, self.stack.values);
-                    
-                    if let Some(HeapEntry::Function { bytecode, closure_vars, .. }) = self.heap.get(*handle) {
+                    println!(
+                        "DEBUG: CallFunction({}, {}) - Stack antes: {:?}",
+                        handle, argc, self.stack.values
+                    );
+
+                    let handle = HandleId::from(handle);
+
+                    if let Some(HeapEntry::Function {
+                        bytecode,
+                        closure_vars,
+                        ..
+                    }) = self.heap.get(handle)
+                    {
                         let bytecode = bytecode.clone();
                         let closure_vars = closure_vars.clone();
                         
@@ -263,7 +273,7 @@ impl Executor {
                         new_frame.arg_count = *argc;
                         new_frame.arguments = args;
                         new_frame.closure_vars = closure_vars;
-                        new_frame.function_handle = Some(*handle);
+                        new_frame.function_handle = Some(handle);
                         new_frame.this_value = this_value;
                         
                         // Empilhar o frame atual e usar o novo
@@ -286,7 +296,7 @@ impl Executor {
                             break;
                         }
                     } else {
-                        panic!("Handle de função inválido no heap: {}", handle);
+                        panic!("Handle de função inválido no heap: {:?}", handle);
                     }
                 }
                 Instruction::Return => {

@@ -1,5 +1,6 @@
 //! Frame for the V8-Rust VM
 
+use crate::heap::HandleId;
 use crate::value::Value;
 use std::collections::HashMap;
 
@@ -11,7 +12,7 @@ pub struct Frame {
     pub base_pointer: usize,
     pub arguments: Vec<Value>,
     pub closure_vars: HashMap<String, Value>,
-    pub function_handle: Option<usize>, // Handle da função atual (para recursão)
+    pub function_handle: Option<HandleId>,
     pub this_value: Option<Value>, // Valor de this da função atual
 }
 
